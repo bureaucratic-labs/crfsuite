@@ -1,3 +1,4 @@
 language: go
 install:
+  - cd liblbfgs && ./autogen.sh && ./configure && sudo make install
   - cd crfsuite && ./autogen.sh && ./configure && sudo make install
