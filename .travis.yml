@@ -2,4 +2,4 @@ language: go
 install:
   - cd liblbfgs && ./autogen.sh && ./configure && sudo make install && cd ..
   - cd crfsuite && ./autogen.sh && ./configure && sudo make install && cd ..
-  - cp /usr/local/lib/libcrfsuite.so /lib/libcrfsuite-0.12.so
+  - sudo cp /usr/local/lib/libcrfsuite.so /lib/libcrfsuite-0.12.so
