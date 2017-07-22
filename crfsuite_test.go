@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func features(items []string, position int) []Feature {
+func getFeatures(items []string, position int) []Feature {
 	result := make([]Feature, 0)
 	result = append(result, Feature{
 		Key:   fmt.Sprintf("lower=%v", strings.ToLower(items[position])),
@@ -32,9 +32,12 @@ func TestTagger(t *testing.T) {
 	model := NewModelFromFile("test_data/tokenization-model.crfsuite")
 	tagger := model.GetTagger()
 	items := []string{"т", "е", "с", "т", "."}
-	result := tagger.Tag(items, features)
-	gold := []int{1, 1, 1, 1, 0} // equals to IIIO
-	if !reflect.DeepEqual(result, gold) {
+	result := tagger.Tag(items, getFeatures)
+	if !reflect.DeepEqual(result, []int{1, 1, 1, 1, 0}) {
+		t.Fail()
+	}
+	labels := tagger.IDsToLabels(result)
+	if !reflect.DeepEqual(labels, []string{"I", "I", "I", "I", "B"}) {
 		t.Fail()
 	}
 }
@@ -44,6 +47,6 @@ func BenchmarkTagger(b *testing.B) {
 	tagger := model.GetTagger()
 	items := []string{"т", "е", "с", "т", "."}
 	for i := 0; i < b.N; i++ {
-		tagger.Tag(items, features)
+		tagger.Tag(items, getFeatures)
 	}
 }

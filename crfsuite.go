@@ -124,6 +124,14 @@ func (t *Tagger) Tag(items []string, extractor FeatureExtractor) []int {
 	}
 }
 
+func (t *Tagger) IDsToLabels(ids []int) []string {
+	labels := make([]string, len(ids))
+	for i := 0; i < len(ids); i++ {
+		labels[i] = t.Labels.ToString(ids[i])
+	}
+	return labels
+}
+
 type Attribute struct {
 	Original unsafe.Pointer
 }
