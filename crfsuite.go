@@ -94,9 +94,11 @@ func (t *Tagger) Tag(items []string, extractor FeatureExtractor) []int {
 		features := extractor(items, i)
 		for i := 0; i < len(features); i++ {
 			feature := features[i]
-			id := t.Attributes.ToID(feature.Key) // TODO:
-			attribute := NewAttribute(id, feature.Value)
-			item.AddAttribute(attribute)
+			id := t.Attributes.ToID(feature.Key)
+			if id > 0 { // TODO: skip unknown features
+				attribute := NewAttribute(id, feature.Value)
+				item.AddAttribute(attribute)
+			}
 		}
 		inst.AddItem(item, 0) // TODO:
 	}
