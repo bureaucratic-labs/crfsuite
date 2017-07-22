@@ -16,7 +16,7 @@ type Feature struct {
 	Value float32
 }
 
-type FeatureExtractor func(item string) []Feature
+type FeatureExtractor func(items []string, position int) []Feature
 
 type Dictionary struct {
 	Original *C.struct_tag_crfsuite_dictionary
@@ -86,11 +86,12 @@ func (t *Tagger) Set(inst Instance) {
 	C.SetTaggerInstance(t.Original, inst.Original)
 }
 
-func (t *Tagger) Tag(items []string, extractor FeatureExtractor) {
+func (t *Tagger) Tag(items []string, extractor FeatureExtractor) []int {
 	inst := NewInstance()
+	defer C.InstanceFinish(inst.Original)
 	for i := 0; i < len(items); i++ {
 		item := NewItem()
-		features := extractor(items[i])
+		features := extractor(items, i)
 		for i := 0; i < len(features); i++ {
 			feature := features[i]
 			id := t.Attributes.ToID(feature.Key) // TODO:
@@ -101,6 +102,17 @@ func (t *Tagger) Tag(items []string, extractor FeatureExtractor) {
 	}
 	if !inst.Empty() {
 		t.Set(inst)
+		length := inst.Length()
+		array := C.TaggerDecode(t.Original, C.int(length))
+		slice := (*[1 << 30]C.int)(unsafe.Pointer(array))[:length:length] // slice that points to original data
+		labels := make([]int, length)                                     // brand new slice, that can be tracked by go gc
+		for i := 0; i < length; i++ {
+			labels[i] = int(slice[i])
+		}
+		defer C.free(unsafe.Pointer(array))
+		return labels
+	} else {
+		return []int{}
 	}
 }
 
@@ -132,11 +144,15 @@ type Instance struct {
 
 func (i *Instance) Empty() bool {
 	status := int(C.EmptyInstance(i.Original))
-	if status == 0 {
+	if status != 0 {
 		return true
 	} else {
 		return false
 	}
+}
+
+func (i *Instance) Length() int {
+	return int(C.InstanceLength(i.Original))
 }
 
 func (i *Instance) AddItem(item Item, label_id int) {

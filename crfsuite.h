@@ -68,7 +68,22 @@ int AddItemToInstance(void* inst, void* item, int label_id) {
     crfsuite_item_finish(item);
 }
 
+int InstanceLength(void* inst) {
+    return ((crfsuite_instance_t*)(inst))->num_items;
+}
+
+int InstanceFinish(void* inst) {
+    crfsuite_instance_finish(inst);
+}
+
 int SetTaggerInstance(crfsuite_tagger_t* tagger, void* inst) {
     tagger->set(tagger, inst);
+}
+
+int* TaggerDecode(crfsuite_tagger_t* tagger, int length) {
+    floatval_t score = 0;
+    int *output = calloc(sizeof(int), length);
+    tagger->viterbi(tagger, output, &score);
+    return output;
 }
 
