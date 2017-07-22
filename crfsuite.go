@@ -41,6 +41,12 @@ func (d *Dictionary) ToID(key string) int {
 	return int(C.DictionaryToID(d.Original, cKey))
 }
 
+func (d *Dictionary) ToString(id int) string {
+	s := C.DictionaryToString(d.Original, C.int(id))
+	defer C.DictionaryFree(d.Original, s)
+	return C.GoString(s)
+}
+
 type Model struct {
 	Labels     Dictionary
 	Attributes Dictionary

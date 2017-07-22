@@ -37,6 +37,16 @@ int DictionaryToID(crfsuite_dictionary_t* dictionary, const char *str) {
     return dictionary->to_id(dictionary, str);
 }
 
+char* DictionaryToString(crfsuite_dictionary_t* dictionary, int id) {
+    const char *str = NULL;
+    dictionary->to_string(dictionary, id, &str);
+    return (char*)str;
+}
+
+void DictionaryFree(crfsuite_dictionary_t* dictionary, char* str) {
+    dictionary->free(dictionary, str);
+}
+
 crfsuite_attribute_t NewAttribute(int id, float value) {
     crfsuite_attribute_t cont;
     crfsuite_attribute_set(&cont, id, value);

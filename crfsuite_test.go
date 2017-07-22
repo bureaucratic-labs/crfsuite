@@ -22,6 +22,10 @@ func TestModelFromFile(t *testing.T) {
 	if labels.Length() != 3 {
 		t.Fail()
 	}
+	label := labels.ToString(0)
+	if label != "B" {
+		t.Fail()
+	}
 }
 
 func TestTagger(t *testing.T) {
@@ -29,7 +33,8 @@ func TestTagger(t *testing.T) {
 	tagger := model.GetTagger()
 	items := []string{"т", "е", "с", "т", "."}
 	result := tagger.Tag(items, features)
-	if !reflect.DeepEqual(result, []int{1, 1, 1, 1, 0}) {
+	gold := []int{1, 1, 1, 1, 0} // equals to IIIO
+	if !reflect.DeepEqual(result, gold) {
 		t.Fail()
 	}
 }
