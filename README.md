@@ -20,9 +20,9 @@ import (
 // User-defined function, that returns features for each item in input sequence
 // Interface is very similar (and based on) to python-crfsuite
 func getFeatures(items []string, position int) []crfsuite.Feature {
-	result := make([]Feature, 0)
+	result := make([]crfsuite.Feature, 0)
 	// Include lowercased value of item (actually, just char) as feature
-	result = append(result, Feature{
+	result = append(result, crfsuite.Feature{
 		Key:   fmt.Sprintf("lower=%v", strings.ToLower(items[position])),
 		Value: 1.0,
 	})
