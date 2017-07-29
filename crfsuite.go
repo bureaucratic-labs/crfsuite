@@ -8,6 +8,7 @@ package crfsuite
 import "C"
 
 import (
+	"sync"
 	"unsafe"
 )
 
@@ -83,6 +84,7 @@ func NewModelFromFile(path string) Model {
 }
 
 type Tagger struct {
+	mutex      sync.Mutex
 	Labels     *Dictionary
 	Attributes *Dictionary
 	Original   *C.struct_tag_crfsuite_tagger
@@ -93,6 +95,8 @@ func (t *Tagger) Set(inst Instance) {
 }
 
 func (t *Tagger) Tag(items []string, extractor FeatureExtractor) []int {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	inst := NewInstance()
 	defer C.InstanceFinish(inst.Original)
 	for i := 0; i < len(items); i++ {
